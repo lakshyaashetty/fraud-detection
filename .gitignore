@@ -5,3 +5,5 @@ mlruns/
 .ipynb_checkpoints/
 .env
 .DS_Store
+mlflow.db
+mlartifacts/
