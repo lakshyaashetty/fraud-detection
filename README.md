@@ -44,7 +44,7 @@ Going from a 1% to a 5% budget (5x the review workload) adds only about 9 points
 2. **Features** (`src/features.py`): amount, transaction type, hour of day, and receiver history (prior payments received, their average, time since the last one). Every feature uses only earlier transactions.
 3. **Training** (`src/train.py`): rule baseline, logistic regression, and XGBoost with class weighting and early stopping, tracked in MLflow.
 4. **Evaluation** (`src/evaluate.py`): threshold set by review capacity on validation, test scored once, SHAP explanations, error analysis.
-5. **Serving** (`app/main.py`): FastAPI endpoint that builds features from live account history, scores the transaction, and returns the top three reasons.
+5. **Serving** (`app/main.py`, `Dockerfile`): FastAPI endpoint, packaged with Docker, that builds features from live account history, scores the transaction, and returns the top three reasons.
 6. **Quality** (`tests/`): pytest suite run by GitHub Actions on every push.
 
 ![MLflow comparison](docs/mlflow_compare.png)
@@ -101,6 +101,13 @@ uvicorn app.main:app --reload           # start the API
 python -m pytest -v                     # run tests
 ```
 
+### Or run the API with Docker
+
+```bash
+docker build -t fraud-api .
+docker run --rm -p 8000:8000 fraud-api   # then open http://localhost:8000/docs
+```
+
 ## Project structure
 
 ```text
@@ -122,7 +129,7 @@ docs/                  charts used in this README
 - **Stateful API.** Account history updates on every request; see the debugging story above.
 - **No sender-side signals.** Device, location, or login data would help with the fraud the model currently misses.
 - **Scores are rankings, not calibrated probabilities**, because class weighting inflates them; the threshold is set by review budget for that reason.
-- **Next:** Docker packaging and probability calibration.
+- **Next:** probability calibration, and deploying the container to a cloud service.
 
 ## Data
 
